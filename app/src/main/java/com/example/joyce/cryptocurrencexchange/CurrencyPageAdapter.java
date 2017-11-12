@@ -1,10 +1,15 @@
 package com.example.joyce.cryptocurrencexchange;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.icu.util.Currency;
+import android.icu.util.ULocale;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -22,8 +27,18 @@ import com.apptakk.http_request.HttpRequest;
 import com.apptakk.http_request.HttpRequestTask;
 import com.apptakk.http_request.HttpResponse;
 import com.bumptech.glide.Glide;
-
+import java.lang.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 
 /**
  * Created by Joyce on 10/11/2017.
@@ -76,7 +91,7 @@ public class CurrencyPageAdapter extends RecyclerView.Adapter<com.example.joyce.
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         //initialize 0.00 text with currency name for easy identification
         currency = currencyList.get(position);
-        holder.title.setText(currency.getName()+" 0.00");
+        holder.title.setTextLocale(Locale.JAPAN);
         card_count = 0;
         //to keep updating values on each card, we need to run it
         Runnable runnable = new Runnable() {
@@ -149,11 +164,11 @@ public class CurrencyPageAdapter extends RecyclerView.Adapter<com.example.joyce.
             @Override
             public void onClick(View v) {
                 //Toast.makeText(mContext, holder.title.getText()+" is the title", Toast.LENGTH_LONG).show();
-                Intent theIntent = new Intent(mContext, ConversionActivity.class);
+                Intent theIntent = new Intent(mContext, ConversionPage.class);
                 theIntent.putExtra("crypto_position", position);
                 mContext.startActivity(theIntent);
-                HomeActivity homeActivity = new HomeActivity();
-                homeActivity.finish();
+                MainActivity_page mainActivity_page = new MainActivity_page();
+                mainActivity_page.finish();
 
             }
         });
@@ -212,7 +227,7 @@ public class CurrencyPageAdapter extends RecyclerView.Adapter<com.example.joyce.
                     for(int i = 0; i< currencyList.size(); i++)
                     {
                         editor.remove("List_" + i);
-                        editor.putString("List_" + i, currencyList.get(i).getName() + "#" +currencyList.get(i).getSymbol() + "#" + currencyList.get(i).getThumbnail());
+                        editor.putString("List_" + i, currencyList.get(i) + "#" +currencyList.get(i) + "#" + currencyList.get(i).getThumbnail());
 
 
                     }
